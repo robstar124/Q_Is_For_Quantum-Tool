@@ -3,18 +3,21 @@ import gates
 
 
 class Archimedes:
-    def __init__(self):
-        self.locations = ["00110", "01010", "10110", "11110"]
-        self.circuit()
+    def __init__(self, initState):
+        self.matrix = np.identity(32)
+        self.matrix = np.matmul(gates.hadamard(5, [1, 2, 3, 4]), self.matrix)   # initial 4 hadamards
+        self.locations = ["00110", "01010", "10110", "11110"]   # "real" locations for the gold bars
+        self.buildCircuit()
+        self.matrix = np.matmul(gates.hadamard(5, [1, 2, 3]), self.matrix)  # final 3 hadamards
+
+        self.runCircuit(initState)
+
         pass
 
-
-    def circuit(self):
-        matrix = np.identity(32)
-        circNots = [0]*3
-
+    def buildCircuit(self): # builds the circuit as one major transformation matrix before applying it to the initial state
+        circNots = [0] * 3   # counts the amount of X gates applied to specific qubits so far
         for i in self.locations:
-            targets = []
+            targets = []    # target for the X gates
             for j in range(0, len(i) - 2):
                 if i[j] == "0":
                     if circNots[j] % 2 == 0:
@@ -32,17 +35,16 @@ class Archimedes:
             xGate = gates.NOT(5, targets)
             cccnot = gates.CCCNOT(1, 2, 3, 4, 5)
 
-            matrix = np.matmul(cccnot, np.matmul(xGate, matrix))
+            self.matrix = np.matmul(cccnot, np.matmul(xGate, self.matrix))
+        return (self.matrix)
 
-            print(matrix)
-
-
-
-
-
+    def runCircuit(self, initState):
+         print(np.matmul(self.matrix, initState)) # "runs" the initial state through our circuit matrix
 
 
 def main():
-    Archimedes()
+    initState = gates.state_vector([0, 1, 1, 1, 0])
+    Archimedes(np.outer(initState, initState))
+
 
 main()
