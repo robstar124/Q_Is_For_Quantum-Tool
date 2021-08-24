@@ -58,3 +58,9 @@ def Teffoli(size, control1, control2, target):
     matrix = np.array(matrix)
     return matrix
 
+def CCCNOT(control1, control2, control3, target, aux): #assume qubit 5 is aux
+
+    gate1 = Teffoli(5, control1, control2, aux)
+    gate2 = Teffoli(5,control3, aux,target)
+
+    return np.matmul(np.matmul(gate1, gate2), gate1)
