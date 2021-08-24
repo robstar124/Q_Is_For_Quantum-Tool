@@ -26,15 +26,16 @@ def state_vector(state):  # create the state vector from a list
         joint = ZERO_VECTOR
 
     for i in range(0, len(state) - 1):
-        if state[i+1] == 0:
+        if state[i + 1] == 0:
             joint = np.kron(joint, ZERO_VECTOR)
 
-        elif state[i+1] == 1:
+        elif state[i + 1] == 1:
             joint = np.kron(joint, ONE_VECTOR)
 
     return joint
 
-def Teffoli(size, control1, control2, target):
+
+def Teffoli(size, control1, control2, target):  # Teffoli gates with controls and targets
     matrix = []
 
     for i in range(0, 2 ** size):
@@ -47,8 +48,8 @@ def Teffoli(size, control1, control2, target):
                 binary[target - 1] = "1"
 
         num = ""
-        for i in binary:
-            num += i
+        for j in binary:
+            num += j
 
         number = int(num, 2)
 
@@ -58,17 +59,19 @@ def Teffoli(size, control1, control2, target):
     matrix = np.array(matrix)
     return matrix
 
-def CCCNOT(control1, control2, control3, target, aux): #assume qubit 5 is aux
+
+def CCCNOT(control1, control2, control3, target, aux):  # assume qubit 5 is aux
 
     gate1 = Teffoli(5, control1, control2, aux)
-    gate2 = Teffoli(5,control3, aux,target)
+    gate2 = Teffoli(5, control3, aux, target)
 
     return np.matmul(np.matmul(gate1, gate2), gate1)
 
-def NOT(size, targets):
+
+def NOT(size, targets):  # creates not gates targeting specific qubits
     matrix = np.identity(1)
     for i in range(0, size):
-        if((i+1) not in targets):
+        if (i + 1) not in targets:
             matrix = np.kron(matrix, np.identity(2))
         else:
             matrix = np.kron(matrix, PAULI_X)
@@ -76,13 +79,13 @@ def NOT(size, targets):
     return matrix
 
 
-def hadamard(size, targets):
+def hadamard(size, targets):  # creates hadamard which targets specific qubits
 
     matrix = np.identity(1)
 
     for i in range(0, size):
 
-        if(i + 1) not in targets:
+        if (i + 1) not in targets:
             matrix = np.kron(matrix, np.identity(2))
 
         else:
