@@ -74,3 +74,18 @@ def NOT(size, targets):
             matrix = np.kron(matrix, PAULI_X)
 
     return matrix
+
+
+def hadamard(size, targets):
+
+    matrix = np.identity(1)
+
+    for i in range(0, size):
+
+        if(i + 1) not in targets:
+            matrix = np.kron(matrix, np.identity(2))
+
+        else:
+            matrix = np.kron(matrix, HADAMARD)
+
+    return matrix
