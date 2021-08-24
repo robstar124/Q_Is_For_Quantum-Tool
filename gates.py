@@ -64,3 +64,13 @@ def CCCNOT(control1, control2, control3, target, aux): #assume qubit 5 is aux
     gate2 = Teffoli(5,control3, aux,target)
 
     return np.matmul(np.matmul(gate1, gate2), gate1)
+
+def NOT(size, targets):
+    matrix = np.identity(1)
+    for i in range(0, size):
+        if((i+1) not in targets):
+            matrix = np.kron(matrix, np.identity(2))
+        else:
+            matrix = np.kron(matrix, PAULI_X)
+
+    return matrix
