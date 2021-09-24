@@ -2,11 +2,11 @@
 
 import numpy as np
 
-IDENTITY = np.matrix([[1, 0], [0, 1]])
+IDENTITY = np.array([[1, 0], [0, 1]])
 ZERO_VECTOR = np.array([1, 0])
 ONE_VECTOR = np.array([0, 1])
-HADAMARD = np.matrix([[1, 1], [1, -1]])
-PAULI_X = np.matrix([[0, 1], [1, 0]])
+HADAMARD = np.array([[1, 1], [1, -1]])
+PAULI_X = np.array([[0, 1], [1, 0]])
 
 
 def n_hadamard(n):  # n will be a power of 2, will build a nxn hadamard gate
