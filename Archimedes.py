@@ -4,7 +4,6 @@ import numpy as np
 import gates
 
 
-
 # 4th bit is the target
 # 5th bit is the dummy
 class Archimedes:
@@ -23,7 +22,7 @@ class Archimedes:
             self.matrix = np.matmul(gates.hadamard(5, [1, 2, 3, 4]), self.matrix)
 
         self.runCircuit()
-        pass
+        return
 
     def buildCircuit(
             self):  # builds the circuit as one major transformation matrix before applying it to the initial state
@@ -59,6 +58,8 @@ def main():
     initState = gates.state_vector([0, 0, 1, 1, 0])
     locations = ["01110", "01010", "10110", "11110"]
     Archimedes(initState, locations)
+
+    print(initState)
 
 
 main()

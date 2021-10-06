@@ -1,4 +1,5 @@
 # this is where gates will be stored and constructed where necessary
+import math
 
 import numpy as np
 
@@ -92,3 +93,45 @@ def hadamard(size, targets):  # creates hadamard which targets specific qubits
             matrix = np.kron(matrix, HADAMARD)
 
     return matrix
+
+
+def probabilities(dens, targetBit):  # helper for measure(), calculates probability of each basis of a pair
+    measurement = ONE_VECTOR
+    return measurement
+
+
+def measureOperator(nQbits, target, measurement):   # calculates the measurement operator and its transpose
+    measurement = [measurement]
+    mBra = np.identity(1)
+    mKet = np.identity(1)
+
+    for i in range(0, nQbits):
+        if (i + 1) != target:
+            mBra = np.kron(np.identity(2), mBra)
+            mKet = np.kron(np.identity(2), mKet)
+
+        else:
+            mBra = np.kron(measurement, mBra)
+            mKet = np.kron(np.transpose(measurement), mKet)
+
+    return mBra, mKet
+
+
+def measure(densityM, target):  # Returns a reduced circuit after the target qubit is measured
+    try:
+        dim = np.shape(densityM)
+        assert (dim[0] == dim[1])
+    except AssertionError:
+        print("Density Matrix is not Square")
+        raise
+
+    chosenBasis = probabilities(densityM, target)
+    bra, ket = measureOperator(int(math.log2(dim[0])), target, chosenBasis)
+
+    matrix = np.matmul(densityM, ket)
+    matrix = np.matmul(bra, matrix)
+    return matrix
+
+
+def density(stateVec):  # creates density matrix
+    return np.outer(stateVec, stateVec)
