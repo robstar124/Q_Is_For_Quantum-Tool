@@ -56,10 +56,3 @@ class Archimedes:
             state.append(ch)
         return state
 
-def main():
-    initState = gates.state_vector([0, 0, 0, 1, 0])
-    locations = ["00110", "01010", "10110", "11110"]
-    Archimedes(initState, locations)
-
-
-main()
