@@ -8,6 +8,7 @@ import gates
 root = tk.Tk()
 is_quantum = False
 
+
 def generate_locations():
     locations = []
     for num in range(0, 4):
@@ -17,6 +18,15 @@ def generate_locations():
         locations.append(foo)
 
     return locations
+
+
+def fakeBars():
+    p = np.random.random()
+    if p < 0.5:
+        return True
+    else:
+        return False
+
 
 def run():
     global position
@@ -35,7 +45,7 @@ def run():
 
 
 def get_results(initial_state):
-    fake = True
+    fake = fakeBars()
     locations = generate_locations()
     print(fake)
     print(position)
@@ -52,7 +62,6 @@ def get_results(initial_state):
 text = tk.Label(root,
                 text="This is Archimedes problem proposed in Q is for Quantum by Terry Rudolph \n in this program you can" \
                      "choose a location of a gold bar and \n it will test if it is real or fake.").grid(row=0)
-
 
 run_button = tk.Button(root, text="run", command=run)
 run_button.grid(row=1, column=1)
