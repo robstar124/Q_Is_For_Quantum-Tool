@@ -19,9 +19,8 @@ class Archimedes:
         else:
             self.matrix = np.matmul(gates.hadamard(5, [1, 2, 3, 4]), self.matrix)  # initial 4 hadamards
             self.buildCircuit()
-            self.matrix = np.matmul(gates.hadamard(5, [1, 2, 3, 4]), self.matrix)
+            self.matrix = np.matmul(gates.hadamard(5, [1, 2, 3]), self.matrix)
 
-        self.runCircuit()
         return
 
     def buildCircuit(
@@ -49,17 +48,18 @@ class Archimedes:
             self.matrix = np.matmul(cccnot, np.matmul(xGate, self.matrix))
         return self.matrix
 
-    def runCircuit(self):
-
-        print(self.matrix)
-
+    def readOutput(self):   # Reads every qubit to give us a determined output
+        state = []
+        mat = self.matrix
+        for i in range(0, 5):
+            mat, ch = gates.measure(mat, 1)
+            state.append(ch)
+        return state
 
 def main():
-    initState = gates.state_vector([0, 0, 1, 1, 0])
-    locations = ["01110", "01010", "10110", "11110"]
+    initState = gates.state_vector([0, 0, 0, 1, 0])
+    locations = ["00110", "01010", "10110", "11110"]
     Archimedes(initState, locations)
-
-    print(initState)
 
 
 main()

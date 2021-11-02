@@ -6,7 +6,7 @@ import numpy as np
 IDENTITY = np.array([[1, 0], [0, 1]])
 ZERO_VECTOR = np.array([1, 0])
 ONE_VECTOR = np.array([0, 1])
-HADAMARD = np.array([[1, 1], [1, -1]])
+HADAMARD = (1 / math.sqrt(2)) * np.array([[1, 1], [1, -1]])
 PAULI_X = np.array([[0, 1], [1, 0]])
 
 
@@ -95,42 +95,69 @@ def hadamard(size, targets):  # creates hadamard which targets specific qubits
     return matrix
 
 
-def probabilities(dens, targetBit):  # helper for measure(), calculates probability of each basis of a pair
-    measurement = ONE_VECTOR
-    return measurement
+def measureChoose(zero, one):  # chooses between the two states the measured qubit could be
+    err = 0.0000000001  # work around the floating point error
+    p0 = np.trace(zero)
+    p1 = np.trace(one)
+    assert ((p0 + p1 > 1 - err) and (p0 + p1 < 1 + err))
+
+    prob = np.random.random()
+    if prob <= p0:
+        return zero / p0, 0     # normalise matrix
+    else:
+        return one / p1, 1
 
 
-def measureOperator(nQbits, target, measurement):   # calculates the measurement operator and its transpose
+def measureOperator(nQbits, target, measurement):  # calculates the measurement operator and its transpose
     measurement = [measurement]
     mBra = np.identity(1)
     mKet = np.identity(1)
 
     for i in range(0, nQbits):
         if (i + 1) != target:
-            mBra = np.kron(np.identity(2), mBra)
-            mKet = np.kron(np.identity(2), mKet)
+            mBra = np.kron(mBra, np.identity(2))
+            mKet = np.kron(mKet, np.identity(2))
 
         else:
-            mBra = np.kron(measurement, mBra)
-            mKet = np.kron(np.transpose(measurement), mKet)
+            mBra = np.kron(mBra, measurement)
+            mKet = np.kron(mKet, np.transpose(measurement))
 
     return mBra, mKet
 
 
-def measure(densityM, target):  # Returns a reduced circuit after the target qubit is measured
-    try:
-        dim = np.shape(densityM)
-        assert (dim[0] == dim[1])
-    except AssertionError:
-        print("Density Matrix is not Square")
-        raise
+def extractState(chosenM):  # determines the state vector from a density matrix
+    stateVec = []
+    for i in range(0, len(chosenM)):
+        negative = 0
+        for j in range(len(chosenM[i])):
 
-    chosenBasis = probabilities(densityM, target)
-    bra, ket = measureOperator(int(math.log2(dim[0])), target, chosenBasis)
+            if i == j:
+                elem = np.sqrt(chosenM[i][j])
+                if negative % 2 == 1:
+                    elem = -elem
+                stateVec.append(elem)
+                break
 
-    matrix = np.matmul(densityM, ket)
-    matrix = np.matmul(bra, matrix)
-    return matrix
+            if (chosenM[i][j] < 0) or (chosenM[j][i] < 0):
+                negative += 1
+    return stateVec
+
+
+def measure(stateM, target):  # Returns a reduced circuit after the target qubit is measured
+    densityM = density(stateM)
+    dim = np.shape(densityM)
+
+    zeroBra, zeroKet = measureOperator(int(math.log2(dim[0])), target, ZERO_VECTOR)
+    oneBra, oneKet = measureOperator(int(math.log2(dim[0])), target, ONE_VECTOR)
+
+    matrixZero = np.matmul(zeroBra, np.matmul(densityM, zeroKet))
+    matrixOne = np.matmul(oneBra, np.matmul(densityM, oneKet))
+
+    chosenM, choice = measureChoose(matrixZero, matrixOne)
+
+    # return the trace of chosenM
+    x = extractState(chosenM)
+    return x, choice
 
 
 def density(stateVec):  # creates density matrix

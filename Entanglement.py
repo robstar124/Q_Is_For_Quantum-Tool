@@ -1,7 +1,7 @@
 import numpy as np
 
 import gates
-import gates as gt
+import gates as gs
 
 
 class Entanglement:
@@ -16,26 +16,19 @@ class Entanglement:
         self.runGame()
         return
 
-    def probabilities(self):
-        pass
-
-    def measure(self, state, target):
-
-        pass
-
     def entangle(self):
-        initState = gt.state_vector([0, 0, 0])
-        hadamard = gt.hadamard(3, [1, 2])
-        ccnot = gt.Teffoli(3, 1, 2, 3)
+        initState = gs.state_vector([0, 0, 0])
+        hadamard = gs.hadamard(3, [1, 2])
+
+        ccnot = gs.Teffoli(3, 1, 2, 3)
 
         circuit = np.matmul(hadamard, initState)
         circuit = np.matmul(ccnot, circuit)
-        circuit = gates.density(circuit)
 
+        circuit, choice = gs.measure(circuit, 3)
 
         print(circuit)
-
-        pass
+        return circuit
 
     def runRound(self):
         if not self.classic:
