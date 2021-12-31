@@ -46,9 +46,19 @@ class Archimedes:
             cccnot = gates.CCCNOT(1, 2, 3, 4, 5)
 
             self.matrix = np.matmul(cccnot, np.matmul(xGate, self.matrix))
+
+        cleanUpTarget = []
+        for i in range(len(circNots)):
+            if circNots[i] % 2 == 0:
+                continue
+            else:
+                cleanUpTarget.append(i + 1)
+        cleanUpX = gates.NOT(5, cleanUpTarget)
+        self.matrix = np.matmul(cleanUpX, self.matrix)
+
         return self.matrix
 
-    def readOutput(self):   # Reads every qubit to give us a determined output
+    def readOutput(self):  # Reads every qubit to give us a determined output
         state = []
         mat = self.matrix
         for i in range(0, 5):

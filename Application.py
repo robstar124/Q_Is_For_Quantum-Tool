@@ -16,7 +16,7 @@ def generate_locations():
         foo = foo + "1"
         foo = foo + "0"
         locations.append(foo)
-
+    print(locations)
     return locations
 
 
